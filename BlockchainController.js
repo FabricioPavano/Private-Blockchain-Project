@@ -62,6 +62,7 @@ class BlockchainController {
                 const message = req.body.message;
                 const signature = req.body.signature;
                 const star = req.body.star;
+
                 try {
                     let block = await this.blockchain.submitStar(address, message, signature, star);
                     if(block){
@@ -109,7 +110,7 @@ class BlockchainController {
                         return res.status(404).send("Block Not Found!");
                     }
                 } catch (error) {
-                    return res.status(500).send("An error happened!");
+                    return res.status(500).send("An error happened!", error);
                 }
             } else {
                 return res.status(500).send("Block Not Found! Review the Parameters!");

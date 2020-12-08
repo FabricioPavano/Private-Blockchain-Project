@@ -11,6 +11,7 @@
 const SHA256 = require('crypto-js/sha256');
 const Block = require('./block.js');
 const bitcoinMessage = require('bitcoinjs-message');
+const e = require('express');
 
 class Blockchain {
 
@@ -86,7 +87,18 @@ class Blockchain {
             self.chain.push(block);
             self.height += 1; 
 
-            resolve(block);
+
+            // Validate chain
+            const isValid = await self.validateChain()
+
+            if(isValid){
+                resolve(block);
+            }
+            else{
+                let invalidBlock = this.chain.pop()
+                reject('invalid block', JSON.stringify(invalidBlock))
+            }
+            
 
         });
     }
@@ -189,7 +201,19 @@ class Blockchain {
         let self = this;
         let stars = [];
         return new Promise((resolve, reject) => {
-            resolve(self.chain.filter( block => block.address === address))
+                    
+            self.chain.forEach( async block => {
+                if(block.address === address){
+
+
+                    const data = await block.getBData()
+
+                    stars.push(data)
+                }
+            })
+        
+            resolve(stars)
+            
         });
     }
 

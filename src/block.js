@@ -39,13 +39,19 @@ class Block {
     validate() {
         let self = this;
         return new Promise((resolve, reject) => {
-            // Save in auxiliary variable the current block hash
-            const saved_hash = self.hash;                                
-            // Recalculate the hash of the Block
-            const new_hash = SHA256(JSON.stringify(self))
+            
+            // New implementation
+            let currentHash = self.hash
 
+            self.hash = null
+
+            // Recalculate the hash of the Block
+            const newHash = SHA256(JSON.stringify(self)).toString()
+            
+            self.hash = currentHash;
+            
             // Comparing if the hashes changed
-            if( saved_hash == new_hash){
+            if( newHash == currentHash){
                 resolve(true);
             }
             else{
@@ -67,6 +73,7 @@ class Block {
         
         let self = this;
         return new Promise((resolve, reject) => {
+           
             // Getting the encoded data saved in the Block
             const encoded_data = self.body;
 
